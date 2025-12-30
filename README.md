@@ -114,6 +114,10 @@ colors: {
 
 다크 모드는 시스템 설정에 따라 자동으로 적용됩니다. 수동으로 제어하려면 `app/layout.tsx`를 수정하세요.
 
+## 배포
+
+Git을 통한 배포 방법은 `DEPLOYMENT_GUIDE.md` 파일을 참고하세요.
+
 ## 참고 자료
 
 - [Next.js 문서](https://nextjs.org/docs)
