@@ -45,17 +45,6 @@ interface Project {
     demo?: string;
     website?: string;
   };
-  goal?: string;
-  flow?: {
-    before: string;
-    after: string;
-  };
-  keyDecisions?: string[];
-  deliverables?: {
-    category: string;
-    name: string;
-    image: string;
-  }[];
 }
 
 interface Skill {
@@ -225,11 +214,10 @@ function readExcelFile(filePath: string) {
     
     // G열(상세 설명)이 있으면 현재 ExperienceItem의 details에 추가
     if (projectDetails && typeof projectDetails === 'string' && projectDetails.trim() && currentItem) {
-      const item = currentItem; // 타입 가드를 위한 로컬 변수
       const detailLines = projectDetails.split('\n')
         .map((d: string) => d.trim())
-        .filter((d: string) => d && !item.details.includes(d));
-      item.details.push(...detailLines);
+        .filter((d: string) => d && !currentItem.details.includes(d));
+      currentItem.details.push(...detailLines);
     }
     
     // F나 G열에 데이터가 없고, A~E열도 비어있으면 루프 종료
@@ -397,17 +385,6 @@ export interface Project {
     demo?: string;
     website?: string;
   };
-  goal?: string;
-  flow?: {
-    before: string;
-    after: string;
-  };
-  keyDecisions?: string[];
-  deliverables?: {
-    category: string;
-    name: string;
-    image: string;
-  }[];
 }
 
 export interface Skill {

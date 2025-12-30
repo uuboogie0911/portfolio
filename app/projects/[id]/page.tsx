@@ -40,30 +40,6 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
     additionalContent = fs.readFileSync(projectContentPath, "utf-8");
   }
 
-  // 산출물 이미지 자동 로드 (public/projects/{project.id}/ 폴더에서)
-  const deliverablesPath = path.join(process.cwd(), "public", "projects", project.id);
-  let deliverables: { category: string; name: string; image: string }[] = [];
-  
-  if (fs.existsSync(deliverablesPath)) {
-    const files = fs.readdirSync(deliverablesPath);
-    const imageFiles = files.filter(file => {
-      const ext = path.extname(file).toLowerCase();
-      return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext);
-    });
-    
-    deliverables = imageFiles.map(file => ({
-      category: "산출물",
-      name: path.parse(file).name,
-      image: `/projects/${project.id}/${file}`
-    }));
-  }
-
-  // 프로젝트에 deliverables 추가
-  const projectWithDeliverables = {
-    ...project,
-    deliverables: deliverables.length > 0 ? deliverables : project.deliverables
-  };
-
   // 마크다운을 HTML로 변환하는 함수
   const parseMarkdown = (text: string): string => {
     if (!text) return '';
@@ -120,17 +96,50 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
       }
     }
     
-    // 모든 섹션 표시 (필터링 최소화)
-    const filteredSections = sections.filter(section => {
-      const sectionLower = section.title.toLowerCase();
-      // "추가 정보" 헤더만 제외 (실제 섹션은 모두 표시)
-      return sectionLower !== '추가 정보' && section.content.length > 0;
-    });
+    // 중복 제거: 이미 표시된 섹션과 성과 섹션과 중복되는 내용 제거
+    const filteredSections = sections
+      .filter(section => {
+        const sectionLower = section.title.toLowerCase();
+        // 이미 메인 섹션에 표시되는 내용 제외
+        return !sectionLower.includes('문제') && 
+               !sectionLower.includes('목표') && 
+               !sectionLower.includes('해결') && 
+               !sectionLower.includes('결과') && 
+               !sectionLower.includes('성과') &&
+               !sectionLower.includes('프로젝트 성과') &&
+               !sectionLower.includes('추가 정보');
+      })
+      .map(section => {
+        // 성과 섹션과 중복되는 내용 제거
+        const filteredContent = section.content.filter(item => {
+          const itemLower = item.toLowerCase();
+          // 성과 섹션에 이미 포함된 숫자나 키워드가 있으면 제외
+          const hasResultsKeyword = resultsKeywords.some(keyword => 
+            itemLower.includes(keyword.toLowerCase())
+          );
+          
+          // 성과 섹션의 전체 문구와 유사한 내용 제외
+          const isSimilarToResults = resultsLines.some(resultLine => {
+            // 주요 키워드가 3개 이상 겹치면 중복으로 간주
+            const itemWords = itemLower.split(/\s+/);
+            const resultWords = resultLine.split(/\s+/);
+            const commonWords = itemWords.filter(word => 
+              resultWords.includes(word) && word.length > 2
+            );
+            return commonWords.length >= 3;
+          });
+          
+          return !hasResultsKeyword && !isSimilarToResults;
+        });
+        
+        return { ...section, content: filteredContent };
+      })
+      .filter(section => section.content.length > 0); // 내용이 있는 섹션만 유지
     
     return filteredSections.length > 0 ? filteredSections : null;
   };
 
-  const parsedSections = parseAdditionalContent(additionalContent, projectWithDeliverables.results);
+  const parsedSections = parseAdditionalContent(additionalContent, project.results);
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
@@ -157,11 +166,11 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
               </svg>
               프로젝트 목록으로
             </Link>
-            {projectWithDeliverables.links && (
+            {project.links && (
               <div className="flex items-center gap-3">
-                {projectWithDeliverables.links.github && (
+                {project.links.github && (
                   <a
-                    href={projectWithDeliverables.links.github}
+                    href={project.links.github}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-4 py-2 bg-gray-900 dark:bg-gray-800 text-white rounded-md hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors text-sm font-medium"
@@ -169,9 +178,9 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                     GitHub
                   </a>
                 )}
-                {projectWithDeliverables.links.demo && (
+                {project.links.demo && (
                   <a
-                    href={projectWithDeliverables.links.demo}
+                    href={project.links.demo}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm font-medium"
@@ -179,9 +188,9 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                     데모 보기
                   </a>
                 )}
-                {projectWithDeliverables.links.website && (
+                {project.links.website && (
                   <a
-                    href={projectWithDeliverables.links.website}
+                    href={project.links.website}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm font-medium"
@@ -200,11 +209,36 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
         {/* 프로젝트 헤더 */}
         <div className="mb-12">
           <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white mb-4">
-            {projectWithDeliverables.title}
+            {project.title}
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
-            {projectWithDeliverables.description}
+            {project.description}
           </p>
+          {(project.developmentPeriod || project.teamSize || project.role) && (
+            <div className="grid md:grid-cols-3 gap-4 text-sm">
+              {project.developmentPeriod && (
+                <div className="p-4">
+                  <div className="text-gray-500 dark:text-gray-400 mb-1">개발기간</div>
+                  <div className="font-semibold text-gray-900 dark:text-white">{project.developmentPeriod}</div>
+                </div>
+              )}
+              {project.teamSize && (
+                <div className="p-4">
+                  <div className="text-gray-500 dark:text-gray-400 mb-1">투입인원</div>
+                  <div className="font-semibold text-gray-900 dark:text-white">{project.teamSize}</div>
+                </div>
+              )}
+              {project.role && (
+                <div className="p-4 md:col-span-3">
+                  <div className="text-gray-500 dark:text-gray-400 mb-2">역할</div>
+                  <div 
+                    className="text-gray-700 dark:text-gray-300 leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: parseMarkdown(project.role) }}
+                  />
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* 프로젝트 내용 섹션 */}
@@ -217,13 +251,13 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
             <div className="p-6">
               <p 
                 className="text-base leading-relaxed text-gray-700 dark:text-gray-300"
-                dangerouslySetInnerHTML={{ __html: parseMarkdown(projectWithDeliverables.problem) }}
+                dangerouslySetInnerHTML={{ __html: parseMarkdown(project.problem) }}
               />
             </div>
           </section>
 
           {/* 목표 */}
-          {projectWithDeliverables.goal && (
+          {project.goal && (
             <section>
               <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white mb-4">
                 목표
@@ -231,14 +265,14 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
               <div className="p-6">
                 <p 
                   className="text-base leading-relaxed text-gray-700 dark:text-gray-300"
-                  dangerouslySetInnerHTML={{ __html: parseMarkdown(projectWithDeliverables.goal) }}
+                  dangerouslySetInnerHTML={{ __html: parseMarkdown(project.goal) }}
                 />
               </div>
             </section>
           )}
 
           {/* FLOW */}
-          {projectWithDeliverables.flow && (
+          {project.flow && (
             <section>
               <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white mb-4">
                 FLOW
@@ -250,7 +284,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                   </div>
                   <p 
                     className="text-base leading-relaxed text-gray-700 dark:text-gray-300"
-                    dangerouslySetInnerHTML={{ __html: parseMarkdown(projectWithDeliverables.flow.before) }}
+                    dangerouslySetInnerHTML={{ __html: parseMarkdown(project.flow.before) }}
                   />
                 </div>
                 <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-6 border-2 border-green-200 dark:border-green-800">
@@ -259,7 +293,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                   </div>
                   <p 
                     className="text-base leading-relaxed text-gray-700 dark:text-gray-300"
-                    dangerouslySetInnerHTML={{ __html: parseMarkdown(projectWithDeliverables.flow.after) }}
+                    dangerouslySetInnerHTML={{ __html: parseMarkdown(project.flow.after) }}
                   />
                 </div>
               </div>
@@ -267,14 +301,14 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
           )}
 
           {/* 핵심 결정 */}
-          {projectWithDeliverables.keyDecisions && projectWithDeliverables.keyDecisions.length > 0 && (
+          {project.keyDecisions && project.keyDecisions.length > 0 && (
             <section>
               <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white mb-4">
                 핵심 결정
               </h2>
               <div className="p-6">
                 <ul className="space-y-2">
-                  {projectWithDeliverables.keyDecisions.map((decision: string, index: number) => (
+                  {project.keyDecisions.map((decision, index) => (
                     <li key={index} className="flex items-start text-base leading-relaxed text-gray-700 dark:text-gray-300">
                       <span className="text-indigo-600 dark:text-indigo-400 mr-3 mt-1 flex-shrink-0">•</span>
                       <span>{decision}</span>
@@ -301,7 +335,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">성과</h3>
                 <p 
                   className="text-base leading-relaxed text-gray-700 dark:text-gray-300"
-                  dangerouslySetInnerHTML={{ __html: parseMarkdown(projectWithDeliverables.results) }}
+                  dangerouslySetInnerHTML={{ __html: parseMarkdown(project.results) }}
                 />
               </div>
 
@@ -313,8 +347,8 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
           </section>
 
           {/* 산출물 예시 */}
-          {projectWithDeliverables.deliverables && projectWithDeliverables.deliverables.length > 0 && (
-            <DeliverablesSection deliverables={projectWithDeliverables.deliverables} />
+          {project.deliverables && project.deliverables.length > 0 && (
+            <DeliverablesSection deliverables={project.deliverables} />
           )}
         </div>
 
@@ -340,11 +374,11 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
               </svg>
               프로젝트 목록으로 돌아가기
             </Link>
-            {projectWithDeliverables.links && (
+            {project.links && (
               <div className="flex items-center gap-3">
-                {projectWithDeliverables.links.github && (
+                {project.links.github && (
                   <a
-                    href={projectWithDeliverables.links.github}
+                    href={project.links.github}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-4 py-2 bg-gray-900 dark:bg-gray-800 text-white rounded-md hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors text-sm font-medium"
@@ -352,14 +386,14 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                     GitHub 보기
                   </a>
                 )}
-                {(projectWithDeliverables.links.demo || projectWithDeliverables.links.website) && (
+                {(project.links.demo || project.links.website) && (
                   <a
-                    href={projectWithDeliverables.links.demo || projectWithDeliverables.links.website}
+                    href={project.links.demo || project.links.website}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm font-medium"
                   >
-                    {projectWithDeliverables.links.demo ? "데모 보기" : "웹사이트 보기"}
+                    {project.links.demo ? "데모 보기" : "웹사이트 보기"}
                   </a>
                 )}
               </div>

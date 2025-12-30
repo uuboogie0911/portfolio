@@ -23,6 +23,11 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
+  // deliverables가 없거나 비어있으면 아무것도 렌더링하지 않음
+  if (!deliverables || deliverables.length === 0) {
+    return null;
+  }
+
   const openModal = () => {
     setCurrentIndex(0);
     setScale(1);
@@ -49,7 +54,13 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
     setPosition({ x: 0, y: 0 });
   };
 
-  // 휠 이벤트 제거 (돋보기 버튼으로만 확대/축소)
+  const handleWheel = (e: React.WheelEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      setScale((prev) => Math.max(0.5, Math.min(3, prev + delta)));
+    }
+  };
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (scale > 1) {
@@ -110,11 +121,6 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isModalOpen, currentIndex, deliverables.length]);
-
-  // deliverables가 없거나 비어있으면 아무것도 렌더링하지 않음
-  if (!deliverables || deliverables.length === 0) {
-    return null;
-  }
 
   // 터치 이벤트 처리 (모바일 스와이프)
   const minSwipeDistance = 50;
@@ -302,22 +308,31 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
                   </span>
                 </div>
                 <div 
-                  className="relative w-full flex-1 overflow-auto bg-gray-100 dark:bg-gray-900"
+                  className="relative w-full flex-1 overflow-hidden bg-gray-100 dark:bg-gray-900"
+                  onWheel={handleWheel}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseUp}
                   style={{ cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
                 >
                   {deliverables[currentIndex]?.image ? (
-                    <div className="flex items-center justify-center p-4 w-full h-full">
+                    <div className="w-full h-full flex items-center justify-center p-4">
                       <img
                         src={deliverables[currentIndex].image}
                         alt={deliverables[currentIndex].name || "산출물"}
-                        className="select-none max-w-full h-auto"
+                        className="max-w-full h-auto select-none"
                         style={{ 
-                          transform: `scale(${scale})`,
-                          transformOrigin: 'center center',
+                          transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
                           transition: isDragging ? 'none' : 'transform 0.2s',
+                          maxHeight: scale === 1 ? 'calc(90vh - 100px)' : 'none',
+                        }}
+                        onDoubleClick={handleResetZoom}
+                        onError={(e) => {
+                          console.error("이미지 로드 실패:", deliverables[currentIndex].image);
+                          (e.target as HTMLImageElement).style.display = "none";
                         }}
                         draggable={false}
-                        loading="lazy"
                       />
                     </div>
                   ) : (
