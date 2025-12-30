@@ -45,6 +45,17 @@ interface Project {
     demo?: string;
     website?: string;
   };
+  goal?: string;
+  flow?: {
+    before: string;
+    after: string;
+  };
+  keyDecisions?: string[];
+  deliverables?: {
+    category: string;
+    name: string;
+    image: string;
+  }[];
 }
 
 interface Skill {
@@ -385,6 +396,17 @@ export interface Project {
     demo?: string;
     website?: string;
   };
+  goal?: string;
+  flow?: {
+    before: string;
+    after: string;
+  };
+  keyDecisions?: string[];
+  deliverables?: {
+    category: string;
+    name: string;
+    image: string;
+  }[];
 }
 
 export interface Skill {
