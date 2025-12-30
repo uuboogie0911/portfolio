@@ -214,18 +214,12 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
             {project.description}
           </p>
-          {(project.developmentPeriod || project.teamSize || project.role) && (
+          {(project.period || project.role) && (
             <div className="grid md:grid-cols-3 gap-4 text-sm">
-              {project.developmentPeriod && (
+              {project.period && (
                 <div className="p-4">
                   <div className="text-gray-500 dark:text-gray-400 mb-1">개발기간</div>
-                  <div className="font-semibold text-gray-900 dark:text-white">{project.developmentPeriod}</div>
-                </div>
-              )}
-              {project.teamSize && (
-                <div className="p-4">
-                  <div className="text-gray-500 dark:text-gray-400 mb-1">투입인원</div>
-                  <div className="font-semibold text-gray-900 dark:text-white">{project.teamSize}</div>
+                  <div className="font-semibold text-gray-900 dark:text-white">{project.period}</div>
                 </div>
               )}
               {project.role && (
@@ -308,7 +302,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
               </h2>
               <div className="p-6">
                 <ul className="space-y-2">
-                  {project.keyDecisions.map((decision, index) => (
+                  {project.keyDecisions.map((decision: string, index: number) => (
                     <li key={index} className="flex items-start text-base leading-relaxed text-gray-700 dark:text-gray-300">
                       <span className="text-indigo-600 dark:text-indigo-400 mr-3 mt-1 flex-shrink-0">•</span>
                       <span>{decision}</span>
