@@ -23,11 +23,6 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
-  // deliverables가 없거나 비어있으면 아무것도 렌더링하지 않음
-  if (!deliverables || deliverables.length === 0) {
-    return null;
-  }
-
   const openModal = () => {
     setCurrentIndex(0);
     setScale(1);
@@ -102,19 +97,30 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
 
   // 키보드 이벤트 처리
   useEffect(() => {
+    if (!isModalOpen) return;
+    if (!deliverables || deliverables.length === 0) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isModalOpen) return;
-      
       if (e.key === "ArrowLeft") {
         if (currentIndex > 0) {
-          handleImageChange(currentIndex - 1);
+          setCurrentIndex(prev => {
+            setScale(1);
+            setPosition({ x: 0, y: 0 });
+            return prev - 1;
+          });
         }
       } else if (e.key === "ArrowRight") {
         if (currentIndex < deliverables.length - 1) {
-          handleImageChange(currentIndex + 1);
+          setCurrentIndex(prev => {
+            setScale(1);
+            setPosition({ x: 0, y: 0 });
+            return prev + 1;
+          });
         }
       } else if (e.key === "Escape") {
-        closeModal();
+        setIsModalOpen(false);
+        setScale(1);
+        setPosition({ x: 0, y: 0 });
       }
     };
 
@@ -147,6 +153,12 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
       goToPrevious();
     }
   };
+
+  // deliverables가 없거나 비어있으면 아무것도 렌더링하지 않음
+  // 주의: 모든 hooks는 이 early return 전에 호출되어야 함
+  if (!deliverables || deliverables.length === 0) {
+    return null;
+  }
 
   return (
     <>
@@ -318,6 +330,7 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
                 >
                   {deliverables[currentIndex]?.image ? (
                     <div className="w-full h-full flex items-center justify-center p-4">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={deliverables[currentIndex].image}
                         alt={deliverables[currentIndex].name || "산출물"}
