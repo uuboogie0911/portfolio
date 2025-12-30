@@ -306,18 +306,14 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
                   style={{ cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
                 >
                   {deliverables[currentIndex]?.image ? (
-                    <div className="flex items-start justify-start p-4">
+                    <div className="flex items-center justify-center p-4 w-full h-full">
                       <img
                         src={deliverables[currentIndex].image}
                         alt={deliverables[currentIndex].name || "산출물"}
-                        className="select-none"
+                        className="select-none max-w-full h-auto"
                         style={{ 
-                          width: 'auto',
-                          height: 'auto',
-                          maxWidth: 'none',
-                          maxHeight: 'none',
                           transform: `scale(${scale})`,
-                          transformOrigin: 'top left',
+                          transformOrigin: 'center center',
                           transition: isDragging ? 'none' : 'transform 0.2s',
                         }}
                         draggable={false}
