@@ -120,45 +120,12 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
       }
     }
     
-    // 중복 제거: 이미 표시된 섹션과 성과 섹션과 중복되는 내용 제거
-    const filteredSections = sections
-      .filter(section => {
-        const sectionLower = section.title.toLowerCase();
-        // 이미 메인 섹션에 표시되는 내용 제외
-        return !sectionLower.includes('문제') && 
-               !sectionLower.includes('목표') && 
-               !sectionLower.includes('해결') && 
-               !sectionLower.includes('결과') && 
-               !sectionLower.includes('성과') &&
-               !sectionLower.includes('프로젝트 성과') &&
-               !sectionLower.includes('추가 정보');
-      })
-      .map(section => {
-        // 성과 섹션과 중복되는 내용 제거
-        const filteredContent = section.content.filter(item => {
-          const itemLower = item.toLowerCase();
-          // 성과 섹션에 이미 포함된 숫자나 키워드가 있으면 제외
-          const hasResultsKeyword = resultsKeywords.some(keyword => 
-            itemLower.includes(keyword.toLowerCase())
-          );
-          
-          // 성과 섹션의 전체 문구와 유사한 내용 제외
-          const isSimilarToResults = resultsLines.some(resultLine => {
-            // 주요 키워드가 3개 이상 겹치면 중복으로 간주
-            const itemWords = itemLower.split(/\s+/);
-            const resultWords = resultLine.split(/\s+/);
-            const commonWords = itemWords.filter(word => 
-              resultWords.includes(word) && word.length > 2
-            );
-            return commonWords.length >= 3;
-          });
-          
-          return !hasResultsKeyword && !isSimilarToResults;
-        });
-        
-        return { ...section, content: filteredContent };
-      })
-      .filter(section => section.content.length > 0); // 내용이 있는 섹션만 유지
+    // 모든 섹션 표시 (필터링 최소화)
+    const filteredSections = sections.filter(section => {
+      const sectionLower = section.title.toLowerCase();
+      // "추가 정보" 헤더만 제외 (실제 섹션은 모두 표시)
+      return sectionLower !== '추가 정보' && section.content.length > 0;
+    });
     
     return filteredSections.length > 0 ? filteredSections : null;
   };
@@ -238,25 +205,6 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
             {projectWithDeliverables.description}
           </p>
-          {(projectWithDeliverables.period || projectWithDeliverables.role) && (
-            <div className="grid md:grid-cols-3 gap-4 text-sm">
-              {projectWithDeliverables.period && (
-                <div className="p-4">
-                  <div className="text-gray-500 dark:text-gray-400 mb-1">개발기간</div>
-                  <div className="font-semibold text-gray-900 dark:text-white">{projectWithDeliverables.period}</div>
-                </div>
-              )}
-              {projectWithDeliverables.role && (
-                <div className="p-4 md:col-span-3">
-                  <div className="text-gray-500 dark:text-gray-400 mb-2">역할</div>
-                  <div 
-                    className="text-gray-700 dark:text-gray-300 leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: parseMarkdown(projectWithDeliverables.role) }}
-                  />
-                </div>
-              )}
-            </div>
-          )}
         </div>
 
         {/* 프로젝트 내용 섹션 */}

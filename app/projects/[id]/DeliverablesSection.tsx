@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 
 interface Deliverable {
   category: string;
@@ -50,13 +49,7 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
     setPosition({ x: 0, y: 0 });
   };
 
-  const handleWheel = (e: React.WheelEvent) => {
-    if (e.ctrlKey || e.metaKey) {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      setScale((prev) => Math.max(0.5, Math.min(3, prev + delta)));
-    }
-  };
+  // 휠 이벤트 제거 (돋보기 버튼으로만 확대/축소)
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (scale > 1) {
@@ -309,37 +302,27 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
                   </span>
                 </div>
                 <div 
-                  className="relative w-full flex-1 overflow-hidden bg-gray-100 dark:bg-gray-900"
-                  onWheel={handleWheel}
-                  onMouseDown={handleMouseDown}
-                  onMouseMove={handleMouseMove}
-                  onMouseUp={handleMouseUp}
-                  onMouseLeave={handleMouseUp}
+                  className="relative w-full flex-1 overflow-auto bg-gray-100 dark:bg-gray-900"
                   style={{ cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
                 >
                   {deliverables[currentIndex]?.image ? (
-                    <div className="w-full h-full flex items-center justify-center p-4">
-                      <div
-                        className="relative select-none"
+                    <div className="flex items-start justify-start p-4">
+                      <img
+                        src={deliverables[currentIndex].image}
+                        alt={deliverables[currentIndex].name || "산출물"}
+                        className="select-none"
                         style={{ 
-                          transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
+                          width: 'auto',
+                          height: 'auto',
+                          maxWidth: 'none',
+                          maxHeight: 'none',
+                          transform: `scale(${scale})`,
+                          transformOrigin: 'top left',
                           transition: isDragging ? 'none' : 'transform 0.2s',
-                          maxHeight: scale === 1 ? 'calc(90vh - 100px)' : 'none',
                         }}
-                        onDoubleClick={handleResetZoom}
-                      >
-                        <Image
-                          src={deliverables[currentIndex].image}
-                          alt={deliverables[currentIndex].name || "산출물"}
-                          width={1200}
-                          height={800}
-                          className="max-w-full h-auto"
-                          style={{ 
-                            maxHeight: scale === 1 ? 'calc(90vh - 100px)' : 'none',
-                          }}
-                          unoptimized
-                        />
-                      </div>
+                        draggable={false}
+                        loading="lazy"
+                      />
                     </div>
                   ) : (
                     <div className="p-8 text-gray-500 dark:text-gray-400 flex items-center justify-center h-full">
