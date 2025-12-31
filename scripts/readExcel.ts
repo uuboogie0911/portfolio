@@ -34,6 +34,12 @@ interface Project {
   title: string;
   description: string;
   problem: string;
+  goal?: string | null;
+  flow?: {
+    before: string;
+    after: string;
+  };
+  keyDecisions?: string[];
   solution: string;
   results: string;
   technologies: string[];
@@ -47,6 +53,11 @@ interface Project {
     demo?: string;
     website?: string;
   };
+  deliverables?: {
+    category: string;
+    name: string;
+    image: string;
+  }[];
 }
 
 interface Skill {
@@ -218,8 +229,10 @@ function readExcelFile(filePath: string) {
     if (projectDetails && typeof projectDetails === 'string' && projectDetails.trim() && currentItem) {
       const detailLines = projectDetails.split('\n')
         .map((d: string) => d.trim())
-        .filter((d: string) => d && !currentItem.details.includes(d));
-      currentItem.details.push(...detailLines);
+        .filter((d: string) => d && currentItem && !currentItem.details.includes(d));
+      if (currentItem) {
+        currentItem.details.push(...detailLines);
+      }
     }
     
     // F나 G열에 데이터가 없고, A~E열도 비어있으면 루프 종료
@@ -376,6 +389,12 @@ export interface Project {
   title: string;
   description: string;
   problem: string;
+  goal?: string | null;
+  flow?: {
+    before: string;
+    after: string;
+  };
+  keyDecisions?: string[];
   solution: string;
   results: string;
   technologies: string[];
@@ -389,6 +408,11 @@ export interface Project {
     demo?: string;
     website?: string;
   };
+  deliverables?: {
+    category: string;
+    name: string;
+    image: string;
+  }[];
 }
 
 export interface Skill {
