@@ -287,37 +287,73 @@ export const experiences: Experience[] = [
 export const projects: Project[] = [
   {
     "id": "proj-1",
-    "title": "회원가입/로그인 개선 프로젝트",
-    "description": "B2C 여행 플랫폼 전환의 성패를 좌우하는 로그인 구조 개편 프로젝트",
+    "title": "[프리비아] 회원가입/로그인 간소화",
+    "description": "B2C 여행 플랫폼 전환의 성패를 좌우하는 로그인 구조 개편 프로젝트. 분리된 가입 구조로 인한 높은 이탈률과 사용자 접근성 문제를 해결하기 위해 이메일·휴대폰·SNS 통합 로그인을 설계하고, 점유 인증/해제 로직을 표준화했습니다.",
     "problem": "분리된 가입 구조로 인한 높은 이탈률과 사용자 접근성 문제",
+    "goal": "통합 로그인 구조를 통해 사용자 접근성 향상 및 이탈률 감소",
+    "flow": {
+      "before": "이메일, 휴대폰, SNS 가입이 각각 분리되어 있어 사용자가 혼란스러워하고 이탈률이 높았습니다.",
+      "after": "이메일·휴대폰·SNS 통합 로그인으로 사용자가 원하는 방식으로 간편하게 가입하고 로그인할 수 있도록 개선했습니다."
+    },
+    "keyDecisions": [
+      "통합 로그인 구조 설계로 사용자 접근성 향상",
+      "점유 인증/해제 로직 표준화로 보안성 강화",
+      "자동 로그인 기능 추가로 사용자 편의성 개선"
+    ],
     "solution": "이메일·휴대폰·SNS 통합 로그인 설계, 점유 인증/해제 로직 표준화, 자동 로그인 및 CS 대응 정책 문서화",
     "results": "신규 가입률 100% 증가, 로그인 이탈률 24% 감소",
     "technologies": [],
     "period": "2022.03 - 2022.08",
+    "developmentPeriod": "3개월",
+    "teamSize": "기획 1명, 디자인 1명, 개발 2명, QA 1명",
     "role": "Product Owner (기획 총괄)",
     "links": {}
   },
   {
     "id": "proj-2",
-    "title": "AI 기반 항공 환불 수수료 조회",
-    "description": "복잡한 항공사 규정을 AI 학습셋으로 구조화한 데이터·AI 접점 기획 사례",
+    "title": "[투어비스] AI 기반 항공 환불 수수료 조회 자동화",
+    "description": "복잡한 항공사 규정을 AI 학습셋으로 구조화한 데이터·AI 접점 기획 사례. 항공사별 환불 규정이 복잡해 CS 문의가 과다 발생하는 문제를 해결하기 위해 환불 규정을 구조화하고 AI 학습 데이터셋을 구축했습니다.",
     "problem": "항공사별 환불 규정이 복잡해 CS 문의 과다 발생",
+    "goal": "AI를 활용한 자동 환불 수수료 조회 기능으로 CS 문의 감소 및 사용자 자기해결 가능성 제고",
+    "flow": {
+      "before": "항공사별 환불 규정이 복잡하고 다양하여 고객이 직접 확인하기 어려워 CS 문의가 과다 발생했습니다.",
+      "after": "AI를 활용하여 항공사별 환불 규정을 자동으로 조회하고, 챗봇·마이페이지·상담센터에 연동하여 고객이 직접 확인할 수 있도록 개선했습니다."
+    },
+    "keyDecisions": [
+      "항공사별 환불 규정 데이터 구조화",
+      "AI 학습 데이터셋 구축으로 정확도 향상",
+      "챗봇·마이페이지·상담센터 다채널 연동"
+    ],
     "solution": "환불 규정 구조화 → AI 학습 데이터셋 구축, 챗봇·마이페이지·상담센터 연동",
     "results": "환불 CS 문의 70% 감소",
     "technologies": [],
     "period": "2022.09 - 2023.02",
+    "developmentPeriod": "2개월",
+    "teamSize": "기획 1명, 개발 2명, QA 1명",
     "role": "Product Owner (기획 총괄)",
     "links": {}
   },
   {
     "id": "proj-3",
-    "title": "항공 Aggregator 플랫폼 'LUNA' 기획 총괄",
-    "description": "국내 최초 NDC Aggregator 시스템 운영 대시보드 기획 총괄",
+    "title": "[타이드스퀘어] 항공 Aggregator 플랫폼 Luna 기획",
+    "description": "국내 최초 NDC Aggregator 시스템 운영 대시보드 기획 총괄. 항공사·OTA별 예약 프로세스가 상이하여 운영 효율성이 저하되는 문제를 해결하기 위해 Aggregator 표준화 설계를 진행하고 운영 대시보드를 기획했습니다.",
     "problem": "항공사·OTA별 예약 프로세스가 상이하여 운영 효율성 저하",
+    "goal": "NDC Aggregator 시스템을 통한 항공사/OTA 표준화 및 운영 효율성 향상",
+    "flow": {
+      "before": "항공사·OTA별로 예약 프로세스가 상이하여 운영팀이 각각 다른 프로세스를 관리해야 했고, 효율성이 저하되었습니다.",
+      "after": "NDC Aggregator 시스템을 통해 항공사/OTA를 표준화하고, 운영 대시보드를 구축하여 운영 효율성을 크게 향상시켰습니다."
+    },
+    "keyDecisions": [
+      "NDC Aggregator 표준화 설계",
+      "Use Case/XML 로그 검증 프로세스 수립",
+      "운영 대시보드 기획으로 실시간 모니터링 가능"
+    ],
     "solution": "Aggregator 표준화 설계, Use Case/XML 로그 검증, 운영 대시보드 기획 및 UAT 리딩",
     "results": "항공사/OTA 표준화 및 자동화 기반 확보, 운영 효율 고도화",
     "technologies": [],
     "period": "2022.05 - 2023.12",
+    "developmentPeriod": "서비스 오픈 6개월 + 고도화 3개월",
+    "teamSize": "기획 1명, 디자인 1명, 개발 4명, QA 1명",
     "role": "Product Owner (기획 총괄)",
     "links": {}
   },
@@ -335,13 +371,25 @@ export const projects: Project[] = [
   },
   {
     "id": "proj-5",
-    "title": "키위블랙 B2B 원단 플랫폼 신규 구축",
-    "description": "서비스 런칭 전체 사이클 경험 (회원가입~결제~출고)",
+    "title": "[키위블랙] B2B 원단 플랫폼 기획",
+    "description": "서비스 런칭 전체 사이클 경험 (회원가입~결제~출고). 원단 거래의 비효율 및 수동 업무 과다 문제를 해결하기 위해 회원가입부터 결제, 출고까지 Full Life Cycle 플랫폼을 구축했습니다.",
     "problem": "원단 거래의 비효율 및 수동 업무 과다",
+    "goal": "B2B 원단 거래 플랫폼 구축을 통한 거래 효율성 향상 및 시장 진출 기반 마련",
+    "flow": {
+      "before": "원단 거래가 전통적인 방식으로 이루어져 비효율적이고 수동 업무가 과다했습니다.",
+      "after": "회원가입부터 결제, 출고까지 전체 프로세스를 디지털화하여 거래 효율성을 크게 향상시켰습니다."
+    },
+    "keyDecisions": [
+      "회원가입~결제~출고 Full Life Cycle 플랫폼 구축",
+      "B2B 특화 기능 설계 (스와치 신청, 원단 발주 등)",
+      "OMS/WMS 운영 시스템 구축으로 백오피스 효율화"
+    ],
     "solution": "회원가입~결제~출고까지 Full Life Cycle 플랫폼 구축",
     "results": "신규고객 확보, B2B 시장 진출 기반 구축",
     "technologies": [],
     "period": "2019.04 - 2021.11",
+    "developmentPeriod": "서비스 오픈 3개월 + 고도화 6개월",
+    "teamSize": "기획 1명, 디자인 1명, 개발 2명",
     "role": "Product Manager",
     "links": {}
   },
@@ -386,10 +434,6 @@ export const skills: Skill[] = [
       {
         "name": "Confluence",
         "level": "중"
-      },
-      {
-        "name": "Bot 기획",
-        "level": "중"
       }
     ]
   },
@@ -405,7 +449,11 @@ export const skills: Skill[] = [
         "level": "하"
       },
       {
-        "name": "Excel Pivot",
+        "name": "Excel",
+        "level": "중"
+      },
+      {
+        "name": "Looker",
         "level": "중"
       }
     ]
@@ -418,7 +466,11 @@ export const skills: Skill[] = [
         "level": "하"
       },
       {
-        "name": "CURSOR AI",
+        "name": "Cursor",
+        "level": "중"
+      },
+      {
+        "name": "Claude",
         "level": "중"
       },
       {
