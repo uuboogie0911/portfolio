@@ -22,11 +22,6 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [imageScales, setImageScales] = useState<Record<number, number>>({});
 
-  // deliverables가 없거나 비어있으면 아무것도 렌더링하지 않음
-  if (!deliverables || deliverables.length === 0) {
-    return null;
-  }
-
   const openModal = () => {
     setCurrentIndex(0);
     setImageScales({});
@@ -115,6 +110,12 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
       goToPrevious();
     }
   };
+
+  // deliverables가 없거나 비어있으면 아무것도 렌더링하지 않음
+  // React Hooks 규칙 준수: 모든 hooks 호출 후에 early return
+  if (!deliverables || deliverables.length === 0) {
+    return null;
+  }
 
   return (
     <>

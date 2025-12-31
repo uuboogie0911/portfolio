@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import Image from "next/image";
 
 interface ImageZoomViewProps {
   src: string;
@@ -81,12 +82,15 @@ export default function ImageZoomView({ src, alt, scale, onScaleChange, onDouble
           justifyContent: "center",
         }}
       >
-        <img
+        <Image
           src={src}
           alt={alt}
+          width={1920}
+          height={1080}
           className="max-w-full max-h-full object-contain select-none pointer-events-none"
           onDoubleClick={onDoubleClick}
           draggable={false}
+          unoptimized
         />
       </div>
     </div>
