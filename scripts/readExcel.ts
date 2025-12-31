@@ -38,7 +38,9 @@ interface Project {
   results: string;
   technologies: string[];
   period: string;
-  role: string;
+  role?: string;
+  developmentPeriod?: string;
+  teamSize?: string;
   image?: string;
   links?: {
     github?: string;
@@ -378,7 +380,9 @@ export interface Project {
   results: string;
   technologies: string[];
   period: string;
-  role: string;
+  role?: string;
+  developmentPeriod?: string;
+  teamSize?: string;
   image?: string;
   links?: {
     github?: string;
