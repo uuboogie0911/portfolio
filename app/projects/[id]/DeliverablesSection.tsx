@@ -13,9 +13,10 @@ interface Deliverable {
 
 interface DeliverablesSectionProps {
   deliverables: Deliverable[];
+  projectId?: string;
 }
 
-export default function DeliverablesSection({ deliverables }: DeliverablesSectionProps) {
+export default function DeliverablesSection({ deliverables, projectId }: DeliverablesSectionProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -124,12 +125,19 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
           <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white">
             산출물 예시
           </h2>
-          <button
-            onClick={openModal}
-            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
-          >
-            산출물보기
-          </button>
+          <div className="flex flex-col items-end gap-2">
+            <button
+              onClick={openModal}
+              className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+            >
+              산출물 보기
+            </button>
+            {projectId === 'proj-5' && (
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                예민할 수 있는 부분은 이미지 블러 처리 했습니다
+              </p>
+            )}
+          </div>
         </div>
       </section>
 

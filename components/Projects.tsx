@@ -9,6 +9,9 @@ export default function Projects() {
     return null;
   }
 
+  // proj-4 (GYG)와 proj-6 (상담센터) 제외하여 4개만 표시
+  const filteredProjects = projects.filter(p => p.id !== 'proj-4' && p.id !== 'proj-6');
+
   return (
     <section
       id="projects"
@@ -28,7 +31,7 @@ export default function Projects() {
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-6">
-          {projects.map((project, index) => (
+          {filteredProjects.map((project, index) => (
             <motion.div
               key={project.id}
               initial={{ opacity: 0, y: 20 }}

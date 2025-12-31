@@ -41,8 +41,9 @@ export async function GET() {
     });
   } catch (error) {
     console.error('이력서 다운로드 오류:', error);
+    const errorMessage = error instanceof Error ? error.message : '파일을 불러오는 중 오류가 발생했습니다.';
     return NextResponse.json(
-      { error: '파일을 불러오는 중 오류가 발생했습니다.' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

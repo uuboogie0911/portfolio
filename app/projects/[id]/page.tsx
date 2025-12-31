@@ -141,6 +141,110 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
 
   const parsedSections = parseAdditionalContent(additionalContent, project.results);
 
+  // public/projects/ 폴더에서 이미지 자동 로드
+  let projectDeliverables: { category: string; name: string; image: string }[] = [];
+  
+  // proj-5는 proj-4 폴더의 이미지를 사용
+  const actualProjectId = project.id === 'proj-5' ? 'proj-4' : project.id;
+  const projectsImagePath = path.join(process.cwd(), "public", "projects", actualProjectId);
+  
+  if (fs.existsSync(projectsImagePath)) {
+    const imageFiles = fs.readdirSync(projectsImagePath)
+      .filter(file => {
+        const ext = path.extname(file).toLowerCase();
+        return ['.png', '.jpg', '.jpeg', '.gif', '.webp'].includes(ext);
+      })
+      .sort(); // 파일명 순서대로 정렬
+    
+    projectDeliverables = imageFiles.map((file, index) => {
+      // 파일명에서 확장자 제거하여 이름 생성
+      const nameWithoutExt = path.basename(file, path.extname(file));
+      let displayName = nameWithoutExt;
+      
+      // 프로젝트별 커스텀 이름 매핑
+      if (project.id === 'proj-3') {
+        // [타이드스퀘어] Luna 프로젝트
+        if (nameWithoutExt === 'fe-1') {
+          displayName = '기획서 1';
+        } else if (nameWithoutExt === 'fe-2') {
+          displayName = '기획서 2';
+        } else if (nameWithoutExt === 'fe-3') {
+          displayName = '기획서 3';
+        } else if (nameWithoutExt === 'spec-1') {
+          displayName = '기능명세서 1';
+        } else if (nameWithoutExt === 'spec-2') {
+          displayName = '기능명세서 2';
+        } else if (nameWithoutExt === 'spec-3') {
+          displayName = 'FE개발용 ELEMENT 정의';
+        } else if (nameWithoutExt === 'spec-4') {
+          displayName = '유저가이드 작성';
+        } else if (nameWithoutExt === 'userflow') {
+          displayName = '사용자 플로우';
+        } else if (nameWithoutExt === 'ia') {
+          displayName = 'IA';
+        }
+      } else if (project.id === 'proj-2') {
+        // [투어비스] AI 기반 항공 환불 수수료 조회 자동화
+        if (nameWithoutExt === 'spec') {
+          displayName = '기획서';
+        } else if (nameWithoutExt === 'operation') {
+          displayName = '실제 운영 화면';
+        } else if (nameWithoutExt === 'dashboard') {
+          displayName = '대시보드';
+        } else if (nameWithoutExt === 'userflow') {
+          displayName = '사용자 플로우';
+        }
+      } else if (project.id === 'proj-5') {
+        // [키위블랙] B2B 원단 플랫폼 기획 - proj-4 폴더의 이미지 사용
+        if (nameWithoutExt.startsWith('spec-')) {
+          displayName = `기획서 ${nameWithoutExt.replace('spec-', '')}`;
+        } else if (nameWithoutExt.startsWith('fe-')) {
+          displayName = `FE 화면 ${nameWithoutExt.replace('fe-', '')}`;
+        } else if (nameWithoutExt.startsWith('admin-')) {
+          displayName = `관리자 화면 ${nameWithoutExt.replace('admin-', '')}`;
+        } else if (nameWithoutExt.startsWith('policy-')) {
+          displayName = `정책 ${nameWithoutExt.replace('policy-', '')}`;
+        } else if (nameWithoutExt === 'ia') {
+          displayName = 'IA';
+        }
+      } else {
+        // 기본 매핑 (다른 프로젝트)
+        if (nameWithoutExt.startsWith('spec-')) {
+          displayName = `기획서 ${nameWithoutExt.replace('spec-', '')}`;
+        } else if (nameWithoutExt.startsWith('fe-')) {
+          displayName = `FE 화면 ${nameWithoutExt.replace('fe-', '')}`;
+        } else if (nameWithoutExt.startsWith('admin-')) {
+          displayName = `관리자 화면 ${nameWithoutExt.replace('admin-', '')}`;
+        } else if (nameWithoutExt === 'flowchart') {
+          displayName = '플로우차트';
+        } else if (nameWithoutExt === 'overview') {
+          displayName = '개요';
+        } else if (nameWithoutExt === 'policy') {
+          displayName = '정책';
+        } else if (nameWithoutExt === 'dashboard') {
+          displayName = '대시보드';
+        } else if (nameWithoutExt === 'operation') {
+          displayName = '운영';
+        } else if (nameWithoutExt === 'userflow') {
+          displayName = '사용자 플로우';
+        } else if (nameWithoutExt === 'ia') {
+          displayName = 'IA';
+        }
+      }
+      
+      return {
+        category: "산출물",
+        name: displayName,
+        image: `/projects/${actualProjectId}/${file}`
+      };
+    });
+  }
+
+  // project.deliverables가 있으면 우선 사용, 없으면 자동 로드한 것 사용
+  const deliverables = project.deliverables && project.deliverables.length > 0 
+    ? project.deliverables 
+    : projectDeliverables;
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* 네비게이션 바 */}
@@ -221,8 +325,8 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
             {project.description}
           </p>
-          {(project.developmentPeriod || project.teamSize || project.role) && (
-            <div className="grid md:grid-cols-3 gap-4 text-sm">
+          {(project.developmentPeriod || project.teamSize) && (
+            <div className="grid md:grid-cols-2 gap-4 text-sm">
               {project.developmentPeriod && (
                 <div className="p-4">
                   <div className="text-gray-500 dark:text-gray-400 mb-1">개발기간</div>
@@ -233,15 +337,6 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                 <div className="p-4">
                   <div className="text-gray-500 dark:text-gray-400 mb-1">투입인원</div>
                   <div className="font-semibold text-gray-900 dark:text-white">{project.teamSize}</div>
-                </div>
-              )}
-              {project.role && (
-                <div className="p-4 md:col-span-3">
-                  <div className="text-gray-500 dark:text-gray-400 mb-2">역할</div>
-                  <div 
-                    className="text-gray-700 dark:text-gray-300 leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: parseMarkdown(project.role) }}
-                  />
                 </div>
               )}
             </div>
@@ -354,8 +449,8 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
           </section>
 
           {/* 산출물 예시 */}
-          {project.deliverables && project.deliverables.length > 0 && (
-            <DeliverablesSection deliverables={project.deliverables} />
+          {deliverables && deliverables.length > 0 && (
+            <DeliverablesSection deliverables={deliverables} projectId={project.id} />
           )}
         </div>
 
