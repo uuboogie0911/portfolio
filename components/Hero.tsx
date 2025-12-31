@@ -107,9 +107,9 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 dark:text-white leading-tight"
+            className="text-[38px] md:text-[38px] lg:text-[38px] font-light text-gray-900 dark:text-white leading-tight"
           >
-            서비스를 넓고 깊게 생각하는 기획자,<br />
+            서비스를 넓고 깊게 생각하는<br />
             <span className="font-semibold">{personalInfo.name}</span>입니다.
           </motion.h1>
 

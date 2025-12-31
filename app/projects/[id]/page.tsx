@@ -209,7 +209,14 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
         {/* 프로젝트 헤더 */}
         <div className="mb-12">
           <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white mb-4">
-            {project.title}
+            {project.title.includes('[') ? (
+              <>
+                <span className="block">{project.title.match(/\[([^\]]+)\]/)?.[0]}</span>
+                <span className="block">{project.title.replace(/\[([^\]]+)\]\s*/, '')}</span>
+              </>
+            ) : (
+              project.title
+            )}
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
             {project.description}

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ImageZoomView from "./ImageZoomView";
+import ZoomControls from "./ZoomControls";
 
 interface Deliverable {
   category: string;
@@ -18,69 +20,34 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const [scale, setScale] = useState(1);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [imageScales, setImageScales] = useState<Record<number, number>>({});
+
+  // deliverables가 없거나 비어있으면 아무것도 렌더링하지 않음
+  if (!deliverables || deliverables.length === 0) {
+    return null;
+  }
 
   const openModal = () => {
     setCurrentIndex(0);
-    setScale(1);
-    setPosition({ x: 0, y: 0 });
+    setImageScales({});
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setScale(1);
-    setPosition({ x: 0, y: 0 });
-  };
-
-  const handleZoomIn = () => {
-    setScale((prev) => Math.min(prev + 0.25, 3));
-  };
-
-  const handleZoomOut = () => {
-    setScale((prev) => Math.max(prev - 0.25, 0.5));
-  };
-
-  const handleResetZoom = () => {
-    setScale(1);
-    setPosition({ x: 0, y: 0 });
-  };
-
-  const handleWheel = (e: React.WheelEvent) => {
-    if (e.ctrlKey || e.metaKey) {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      setScale((prev) => Math.max(0.5, Math.min(3, prev + delta)));
-    }
-  };
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (scale > 1) {
-      setIsDragging(true);
-      setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
-    }
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (isDragging && scale > 1) {
-      setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y,
-      });
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
+    setImageScales({});
   };
 
   const handleImageChange = (newIndex: number) => {
     setCurrentIndex(newIndex);
-    setScale(1);
-    setPosition({ x: 0, y: 0 });
+  };
+
+  const handleScaleChange = (newScale: number) => {
+    const clampedScale = Math.max(0.5, Math.min(3.0, newScale));
+    setImageScales(prev => ({
+      ...prev,
+      [currentIndex]: clampedScale
+    }));
   };
 
   const goToPrevious = () => {
@@ -97,30 +64,19 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
 
   // 키보드 이벤트 처리
   useEffect(() => {
-    if (!isModalOpen) return;
-    if (!deliverables || deliverables.length === 0) return;
-
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isModalOpen) return;
+      
       if (e.key === "ArrowLeft") {
         if (currentIndex > 0) {
-          setCurrentIndex(prev => {
-            setScale(1);
-            setPosition({ x: 0, y: 0 });
-            return prev - 1;
-          });
+          handleImageChange(currentIndex - 1);
         }
       } else if (e.key === "ArrowRight") {
         if (currentIndex < deliverables.length - 1) {
-          setCurrentIndex(prev => {
-            setScale(1);
-            setPosition({ x: 0, y: 0 });
-            return prev + 1;
-          });
+          handleImageChange(currentIndex + 1);
         }
       } else if (e.key === "Escape") {
-        setIsModalOpen(false);
-        setScale(1);
-        setPosition({ x: 0, y: 0 });
+        closeModal();
       }
     };
 
@@ -130,17 +86,23 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
 
   // 터치 이벤트 처리 (모바일 스와이프)
   const minSwipeDistance = 50;
+  const currentScale = imageScales[currentIndex] || 1.0;
 
   const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
+    if (currentScale <= 1) {
+      setTouchEnd(null);
+      setTouchStart(e.targetTouches[0].clientX);
+    }
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
+    if (currentScale <= 1) {
+      setTouchEnd(e.targetTouches[0].clientX);
+    }
   };
 
   const onTouchEnd = () => {
+    if (currentScale > 1) return;
     if (!touchStart || !touchEnd) return;
     
     const distance = touchStart - touchEnd;
@@ -154,18 +116,12 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
     }
   };
 
-  // deliverables가 없거나 비어있으면 아무것도 렌더링하지 않음
-  // 주의: 모든 hooks는 이 early return 전에 호출되어야 함
-  if (!deliverables || deliverables.length === 0) {
-    return null;
-  }
-
   return (
     <>
       <section className="mt-12">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white">
-            산출물
+            산출물 예시
           </h2>
           <button
             onClick={openModal}
@@ -183,7 +139,6 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={closeModal}
             className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
           >
             <motion.div
@@ -201,10 +156,10 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
               {/* 닫기 버튼 */}
               <button
                 onClick={closeModal}
-                className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors z-10"
+                className="absolute top-4 right-4 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors z-20"
               >
                 <svg
-                  className="w-8 h-8"
+                  className="w-6 h-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -217,48 +172,6 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
                   />
                 </svg>
               </button>
-
-              {/* 줌 컨트롤 버튼 */}
-              <div className="absolute -top-10 left-0 flex gap-2 z-10">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleZoomIn();
-                  }}
-                  className="text-white hover:text-gray-300 transition-colors bg-black/50 rounded p-2"
-                  title="확대 (Ctrl + 마우스휠)"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
-                  </svg>
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleZoomOut();
-                  }}
-                  className="text-white hover:text-gray-300 transition-colors bg-black/50 rounded p-2"
-                  title="축소 (Ctrl + 마우스휠)"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
-                  </svg>
-                </button>
-                {scale !== 1 && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleResetZoom();
-                    }}
-                    className="text-white hover:text-gray-300 transition-colors bg-black/50 rounded p-2"
-                    title="리셋"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                  </button>
-                )}
-              </div>
 
               {/* 이전 버튼 */}
               {currentIndex > 0 && (
@@ -312,42 +225,42 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
 
               <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col h-full">
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between flex-shrink-0">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    {deliverables[currentIndex]?.name || "산출물"}
-                  </h3>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {currentIndex + 1} / {deliverables.length}
-                  </span>
+                  <div className="flex items-center gap-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      {deliverables[currentIndex]?.name || "산출물"}
+                    </h3>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {currentIndex + 1} / {deliverables.length}
+                    </span>
+                  </div>
                 </div>
-                <div 
-                  className="relative w-full flex-1 overflow-hidden bg-gray-100 dark:bg-gray-900"
-                  onWheel={handleWheel}
-                  onMouseDown={handleMouseDown}
-                  onMouseMove={handleMouseMove}
-                  onMouseUp={handleMouseUp}
-                  onMouseLeave={handleMouseUp}
-                  style={{ cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
-                >
+                
+                {/* 줌 컨트롤 */}
+                <ZoomControls
+                  currentScale={currentScale}
+                  onZoomIn={() => {
+                    const newScale = Math.min(currentScale + 0.25, 3.0);
+                    handleScaleChange(newScale);
+                  }}
+                  onZoomOut={() => {
+                    const newScale = Math.max(currentScale - 0.25, 0.5);
+                    handleScaleChange(newScale);
+                  }}
+                  onReset={() => {
+                    handleScaleChange(1.0);
+                  }}
+                  onScaleChange={handleScaleChange}
+                />
+                
+                <div className="relative w-full flex-1 bg-gray-100 dark:bg-gray-900">
                   {deliverables[currentIndex]?.image ? (
-                    <div className="w-full h-full flex items-center justify-center p-4">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={deliverables[currentIndex].image}
-                        alt={deliverables[currentIndex].name || "산출물"}
-                        className="max-w-full h-auto select-none"
-                        style={{ 
-                          transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
-                          transition: isDragging ? 'none' : 'transform 0.2s',
-                          maxHeight: scale === 1 ? 'calc(90vh - 100px)' : 'none',
-                        }}
-                        onDoubleClick={handleResetZoom}
-                        onError={(e) => {
-                          console.error("이미지 로드 실패:", deliverables[currentIndex].image);
-                          (e.target as HTMLImageElement).style.display = "none";
-                        }}
-                        draggable={false}
-                      />
-                    </div>
+                    <ImageZoomView
+                      src={deliverables[currentIndex].image}
+                      alt={deliverables[currentIndex].name || "산출물"}
+                      scale={currentScale}
+                      onScaleChange={handleScaleChange}
+                      onDoubleClick={() => handleScaleChange(1.0)}
+                    />
                   ) : (
                     <div className="p-8 text-gray-500 dark:text-gray-400 flex items-center justify-center h-full">
                       이미지를 불러올 수 없습니다.
@@ -376,4 +289,3 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
     </>
   );
 }
-

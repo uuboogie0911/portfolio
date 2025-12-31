@@ -25,9 +25,6 @@ export default function Projects() {
           <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white mb-4">
             주요 프로젝트
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
-            주요 프로젝트의 세부 사항을 확인해보세요
-          </p>
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -41,7 +38,14 @@ export default function Projects() {
             >
               <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                  {project.title}
+                  {project.title.includes('[') ? (
+                    <>
+                      <span className="block text-base">{project.title.match(/\[([^\]]+)\]/)?.[0]}</span>
+                      <span className="block">{project.title.replace(/\[([^\]]+)\]\s*/, '')}</span>
+                    </>
+                  ) : (
+                    project.title
+                  )}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
                   {project.description}

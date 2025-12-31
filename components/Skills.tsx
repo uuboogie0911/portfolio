@@ -24,9 +24,6 @@ export default function Skills() {
           <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white mb-4">
             기술 스택 및 도구
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
-            아래의 기술을 사용할 수 있습니다.
-          </p>
         </motion.div>
 
         <div className="space-y-12">
