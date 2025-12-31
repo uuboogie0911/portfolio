@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ImageZoomView from "./ImageZoomView";
 import ZoomControls from "./ZoomControls";
@@ -33,9 +33,9 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
     setImageScales({});
   };
 
-  const handleImageChange = (newIndex: number) => {
+  const handleImageChange = useCallback((newIndex: number) => {
     setCurrentIndex(newIndex);
-  };
+  }, []);
 
   const handleScaleChange = (newScale: number) => {
     const clampedScale = Math.max(0.5, Math.min(3.0, newScale));
@@ -77,7 +77,7 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isModalOpen, currentIndex, deliverables.length]);
+  }, [isModalOpen, currentIndex, deliverables.length, handleImageChange]);
 
   // 터치 이벤트 처리 (모바일 스와이프)
   const minSwipeDistance = 50;

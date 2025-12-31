@@ -23,7 +23,7 @@ export default function ImageZoomView({ src, alt, scale, onScaleChange, onDouble
   }, [scale]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (scale > 1 && e.button === 0) {
+    if (e.button === 0) {
       e.preventDefault();
       setIsDragging(true);
       setDragStart({
@@ -31,11 +31,11 @@ export default function ImageZoomView({ src, alt, scale, onScaleChange, onDouble
         y: e.clientY - position.y,
       });
     }
-  }, [scale, position]);
+  }, [position.x, position.y]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (isDragging && scale > 1) {
+      if (isDragging) {
         e.preventDefault();
         setPosition({
           x: e.clientX - dragStart.x,
@@ -59,14 +59,14 @@ export default function ImageZoomView({ src, alt, scale, onScaleChange, onDouble
         document.removeEventListener("mouseup", handleMouseUp);
       };
     }
-  }, [isDragging, scale, dragStart]);
+  }, [isDragging, dragStart]);
 
   return (
     <div
       ref={containerRef}
       className="relative w-full h-full overflow-hidden bg-gray-100 dark:bg-gray-900"
       style={{
-        cursor: scale > 1 ? (isDragging ? "grabbing" : "grab") : "default",
+        cursor: isDragging ? "grabbing" : "grab",
         userSelect: "none",
       }}
       onMouseDown={handleMouseDown}
