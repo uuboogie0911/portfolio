@@ -15,9 +15,7 @@ export type {
   PersonalInfo,
   Experience,
   ExperienceItem,
+  Project,
   Skill,
   Education,
 } from './portfolio-generated';
-
-// Project 타입은 별도 파일에서 가져옴
-export type { Project } from './ProjectTypes';

@@ -25,6 +25,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
     notFound();
   }
 
+  // 프로젝트별 추가 콘텐츠 파일 경로
   const projectContentPath = path.join(
     process.cwd(),
     "content",
@@ -34,23 +35,31 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   
   let additionalContent = "";
 
+  // 추가 콘텐츠 파일 읽기 (있는 경우)
   if (fs.existsSync(projectContentPath)) {
     additionalContent = fs.readFileSync(projectContentPath, "utf-8");
   }
 
+  // 마크다운을 HTML로 변환하는 함수
   const parseMarkdown = (text: string): string => {
     if (!text) return '';
     
     let html = text
+      // **bold** -> <strong>bold</strong>
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      // *italic* -> <em>italic</em>
       .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      // 줄바꿈 처리
       .replace(/\n/g, '<br />');
     
     return html;
   };
 
+  // 추가 콘텐츠 파싱 및 필터링
   const parseAdditionalContent = (content: string, results: string): { title: string; content: string[] }[] | null => {
     if (!content) return null;
+    
+    // 성과 섹션의 내용을 추출하여 중복 체크용으로 사용
     const resultsLines = results.split('\n').map(line => line.trim().toLowerCase()).filter(line => line);
     const resultsKeywords = resultsLines.flatMap(line => {
       // 숫자와 함께 나오는 키워드 추출

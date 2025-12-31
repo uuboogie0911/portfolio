@@ -26,7 +26,10 @@ pnpm install
 ### 엑셀 파일 설정
 
 1. `data/portfolio.xlsx` 파일을 생성하세요
-2. `data/portfolio.xlsx.README.md` 파일을 참고하여 엑셀 파일을 작성하세요
+2. `scripts/createExcelTemplate.ts`를 실행하여 템플릿을 생성할 수 있습니다:
+   ```bash
+   npm run create:excel
+   ```
 3. 데이터 빌드:
    ```bash
    npm run build:data
@@ -80,8 +83,6 @@ npm start
 포트폴리오 내용을 수정하려면 **`data/portfolio.xlsx`** 파일을 엑셀로 열어서 수정하세요.
 
 ### 엑셀 파일 구조
-
-자세한 내용은 `data/portfolio.xlsx.README.md` 파일을 참고하세요.
 
 **시트 구성:**
 1. **개인정보**: 이름, 직책, 소개, 연락처 등

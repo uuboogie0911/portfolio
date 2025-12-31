@@ -57,6 +57,7 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
     }
   };
 
+  // 키보드 이벤트 처리
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isModalOpen) return;
@@ -78,6 +79,7 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isModalOpen, currentIndex, deliverables.length, handleImageChange]);
 
+  // 터치 이벤트 처리 (모바일 스와이프)
   const minSwipeDistance = 50;
   const currentScale = imageScales[currentIndex] || 1.0;
 
@@ -109,6 +111,8 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
     }
   };
 
+  // deliverables가 없거나 비어있으면 아무것도 렌더링하지 않음
+  // React Hooks 규칙 준수: 모든 hooks 호출 후에 early return
   if (!deliverables || deliverables.length === 0) {
     return null;
   }
@@ -129,6 +133,7 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
         </div>
       </section>
 
+      {/* 이미지 모달 */}
       <AnimatePresence mode="wait">
         {isModalOpen && (
           <motion.div
@@ -149,6 +154,7 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
               onTouchEnd={onTouchEnd}
               className="relative max-w-7xl w-full h-[90vh] flex flex-col"
             >
+              {/* 닫기 버튼 */}
               <button
                 onClick={closeModal}
                 className="absolute top-4 right-4 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors z-20"
@@ -168,6 +174,7 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
                 </svg>
               </button>
 
+              {/* 이전 버튼 */}
               {currentIndex > 0 && (
                 <button
                   onClick={(e) => {
@@ -192,6 +199,7 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
                 </button>
               )}
 
+              {/* 다음 버튼 */}
               {currentIndex < deliverables.length - 1 && (
                 <button
                   onClick={(e) => {
@@ -228,6 +236,7 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
                   </div>
                 </div>
                 
+                {/* 줌 컨트롤 */}
                 <ZoomControls
                   currentScale={currentScale}
                   onZoomIn={() => {
@@ -261,6 +270,7 @@ export default function DeliverablesSection({ deliverables }: DeliverablesSectio
                 </div>
               </div>
 
+              {/* 모바일 인디케이터 */}
               <div className="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
                 {deliverables.map((_, idx) => (
                   <div

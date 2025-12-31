@@ -15,7 +15,7 @@ function createExcelTemplate() {
     ['LinkedIn', ''],
     ['GitHub', ''],
     ['이력서', '/resume.pdf'],
-    ['프로필사진', '/profil.jpg.JPG'],
+    ['프로필사진', '/profile.jpg'],
   ];
   const personalInfoSheet = XLSX.utils.aoa_to_sheet(personalInfoData);
   XLSX.utils.book_append_sheet(workbook, personalInfoSheet, '개인정보');

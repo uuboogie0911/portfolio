@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 
@@ -15,13 +15,17 @@ export default function ProjectHighlights({ sections }: ProjectHighlightsProps) 
   useEffect(() => {
     setMounted(true);
   }, []);
-
+  
+  // 마크다운을 HTML로 변환하는 함수
   const parseMarkdown = (text: string): string => {
     if (!text) return '';
     
     let html = text
+      // **bold** -> <strong>bold</strong>
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      // *italic* -> <em>italic</em>
       .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      // 줄바꿈 처리
       .replace(/\n/g, '<br />');
     
     return html;
@@ -49,6 +53,7 @@ export default function ProjectHighlights({ sections }: ProjectHighlightsProps) 
 
   return (
     <>
+      {/* 전체 열기/닫기 버튼을 헤더에 포털로 렌더링 */}
       {mounted && typeof window !== 'undefined' && (
         createPortal(
           toggleButton,
