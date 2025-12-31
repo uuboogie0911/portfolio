@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 
 interface ImageZoomViewProps {
@@ -15,9 +15,7 @@ export default function ImageZoomView({ src, alt, scale, onScaleChange, onDouble
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  // scale이 변경될 때마다 position을 항상 { x: 0, y: 0 }으로 리셋
   useEffect(() => {
     setPosition({ x: 0, y: 0 });
   }, [scale]);
@@ -63,7 +61,6 @@ export default function ImageZoomView({ src, alt, scale, onScaleChange, onDouble
 
   return (
     <div
-      ref={containerRef}
       className="relative w-full h-full overflow-hidden bg-gray-100 dark:bg-gray-900"
       style={{
         cursor: isDragging ? "grabbing" : "grab",
