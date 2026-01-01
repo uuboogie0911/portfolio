@@ -5,7 +5,7 @@ import path from 'path';
 export async function GET() {
   try {
     // public 폴더의 이력서 파일 경로
-    const filePath = path.join(process.cwd(), 'public', 'resume.pdf');
+    const filePath = path.join(process.cwd(), 'public', '문진경 이력서.pdf');
     
     // 파일 존재 여부 확인
     if (!fs.existsSync(filePath)) {
