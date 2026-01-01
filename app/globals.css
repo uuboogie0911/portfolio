@@ -8,7 +8,8 @@
   --background-end-rgb: 255, 255, 255;
 }
 
-@media (prefers-color-scheme: dark) {
+/* 데스크톱에서만 다크모드 적용 (모바일 제외) */
+@media (min-width: 769px) and (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
@@ -54,7 +55,8 @@ html {
   background: #9ca3af;
 }
 
-@media (prefers-color-scheme: dark) {
+/* 데스크톱에서만 다크모드 적용 (모바일 제외) */
+@media (min-width: 769px) and (prefers-color-scheme: dark) {
   ::-webkit-scrollbar-track {
     background: #111827;
   }
@@ -65,6 +67,40 @@ html {
 
   ::-webkit-scrollbar-thumb:hover {
     background: #4b5563;
+  }
+}
+
+/* 모바일에서는 다크모드 강제 비활성화 */
+@media (max-width: 768px) {
+  /* 다크모드 미디어 쿼리 무시 */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --foreground-rgb: 0, 0, 0;
+      --background-start-rgb: 255, 255, 255;
+      --background-end-rgb: 255, 255, 255;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f9fafb;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #9ca3af;
+    }
+  }
+  
+  /* Tailwind dark: 클래스 오버라이드 */
+  .dark {
+    color-scheme: light !important;
+  }
+  
+  /* 모든 dark: 클래스 스타일을 라이트 모드로 강제 */
+  [class*="dark:"] {
+    /* 모바일에서는 dark: 클래스 무시 */
   }
 }
 

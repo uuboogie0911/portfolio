@@ -4,19 +4,11 @@ import path from 'path';
 
 export async function GET() {
   try {
-    // data 폴더의 이력서 파일 경로
-    const filePath = path.join(process.cwd(), 'data', '문진경 이력서.pdf');
-    
-    console.log('파일 경로:', filePath);
-    console.log('파일 존재 여부:', fs.existsSync(filePath));
+    // public 폴더의 이력서 파일 경로
+    const filePath = path.join(process.cwd(), 'public', 'resume.pdf');
     
     // 파일 존재 여부 확인
     if (!fs.existsSync(filePath)) {
-      // data 폴더의 모든 파일 확인
-      const dataDir = path.join(process.cwd(), 'data');
-      const files = fs.readdirSync(dataDir);
-      console.log('data 폴더의 파일들:', files);
-      
       return NextResponse.json(
         { error: `파일을 찾을 수 없습니다. 경로: ${filePath}` },
         { status: 404 }
