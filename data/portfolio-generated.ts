@@ -1,5 +1,5 @@
-// 이 파일은 자동 생성됩니다. data/portfolio.xlsx 파일을 수정한 후 npm run build:data를 실행하세요.
-// 직접 수정하지 마세요!
+// 포트폴리오 데이터 파일
+// 이 파일을 직접 수정할 수 있습니다.
 
 export interface ExperienceItem {
   title: string;
@@ -84,7 +84,7 @@ export const personalInfo: PersonalInfo = {
   "linkedin": "010-3199-7887",
   "github": "",
   "resume": "/resume.pdf",
-  "profileImage": "/profil.jpg.JPG"
+  "profileImage": "/profile.jpg"
 };
 
 export const experiences: Experience[] = [

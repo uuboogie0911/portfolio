@@ -119,7 +119,7 @@ function readExcelFile(filePath: string) {
   const merges = experienceSheet['!merges'] || [];
   
   // 병합된 셀의 값을 찾는 함수
-  const getMergedCellValue = (row: number, col: string): any => {
+  const getMergedCellValue = (row: number, col: string): string | number | null => {
     const cellAddr = `${col}${row}`;
     const cell = experienceSheet[cellAddr];
     
