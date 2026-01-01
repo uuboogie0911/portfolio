@@ -6,7 +6,7 @@ const config: Config = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  darkMode: ['media', 'selector'], // 미디어 쿼리와 선택자 모두 지원
+  darkMode: 'media',
   theme: {
     extend: {
       colors: {
